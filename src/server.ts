@@ -1,23 +1,13 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
+import app from "./app.js";
+import { connectDB } from "./config/db.js";
+import { env } from "./config/env.js";
 
-dotenv.config();
+const startServer = async () => {
+  await connectDB();
 
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-
-const PORT = process.env.PORT || 5000;
-
-app.get("/", (_req, res) => {
-  res.json({
-    success: true,
-    message: "Express + TypeScript + ES Module Working 🚀",
+  app.listen(env.PORT, () => {
+    console.log(`Server running on port ${env.PORT}`);
   });
-});
+};
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+startServer();
