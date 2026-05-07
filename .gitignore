@@ -25,6 +25,12 @@ frontend/.env.production.local
 !README.md
 !frontend/README.md
 
+# Kiro development files
+.kiro/
+.kiro/specs/
+.kiro/steering/
+.kiro/settings/
+
 # Development files
 .vscode/
 .idea/
