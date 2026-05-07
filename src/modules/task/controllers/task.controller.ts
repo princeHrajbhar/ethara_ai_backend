@@ -18,7 +18,8 @@ export const createTask =
     const task =
       await createTaskService(
         req.body,
-        user.id
+        user.id,
+        user.role
       );
 
     res
@@ -33,9 +34,13 @@ export const createTask =
 
 export const getProjectTasks =
   asyncHandler(async (req, res) => {
+    const user = req.user as any;
+
     const tasks =
       await getProjectTasksService(
-        req.params.projectId as string
+        req.params.projectId as string,
+        user.id,
+        user.role
       );
 
     res.json(
@@ -48,9 +53,13 @@ export const getProjectTasks =
 
 export const getSingleTask =
   asyncHandler(async (req, res) => {
+    const user = req.user as any;
+
     const task =
       await getSingleTaskService(
-        req.params.taskId as string
+        req.params.taskId as string,
+        user.id,
+        user.role
       );
 
     res.json(
@@ -63,10 +72,16 @@ export const getSingleTask =
 
 export const updateTask =
   asyncHandler(async (req, res) => {
+    const user = req.user as any;
+    const project = req.project as any;
+
     const task =
       await updateTaskService(
         req.params.taskId as string,
-        req.body
+        req.body,
+        user.id,
+        user.role,
+        project
       );
 
     res.json(
@@ -79,8 +94,14 @@ export const updateTask =
 
 export const deleteTask =
   asyncHandler(async (req, res) => {
+    const user = req.user as any;
+    const project = req.project as any;
+
     await deleteTaskService(
-      req.params.taskId as string
+      req.params.taskId as string,
+      user.id,
+      user.role,
+      project
     );
 
     res.json(
@@ -100,7 +121,9 @@ export const updateTaskStatus =
 
         req.body.status,
 
-        user.id
+        user.id,
+
+        user.role
       );
 
     res.json(

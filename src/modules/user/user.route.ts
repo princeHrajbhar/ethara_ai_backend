@@ -13,6 +13,8 @@ import { authorize } from "../../middlewares/role.middleware.js";
 
 import { UserRole } from "./user.interface.js";
 
+import { validateObjectId } from "../../middlewares/validateObjectId.middleware.js";
+
 const router = Router();
 
 router.get(
@@ -24,12 +26,13 @@ router.get(
 router.get(
   "/",
   protect,
-  authorize(UserRole.MEMBER),
+  authorize(UserRole.ADMIN),
   getAllUsers
 );
 
 router.delete(
   "/:userId",
+  validateObjectId("userId"),
   protect,
   authorize(UserRole.ADMIN),
   deleteUser
@@ -37,6 +40,7 @@ router.delete(
 
 router.patch(
   "/:userId/role",
+  validateObjectId("userId"),
   protect,
   authorize(UserRole.ADMIN),
   changeUserRole

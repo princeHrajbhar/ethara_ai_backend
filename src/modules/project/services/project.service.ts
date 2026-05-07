@@ -58,17 +58,6 @@ export const createProjectService =
         ],
       });
 
-    /**
-     * UPDATE USER ROLE
-     */
-
-    await User.findByIdAndUpdate(
-      userId,
-      {
-        role: UserRole.ADMIN,
-      }
-    );
-
     return project;
   };
 
@@ -147,6 +136,13 @@ export const getSingleProjectService =
       );
     }
 
+    if (project.isDeleted) {
+      throw new ApiError(
+        404,
+        "Project not found"
+      );
+    }
+
     return project;
   };
 
@@ -191,6 +187,16 @@ export const addProjectMemberService =
     projectId: string,
     payload: any
   ) => {
+    // Validate user exists
+    const user = await User.findById(payload.userId);
+
+    if (!user) {
+      throw new ApiError(
+        404,
+        "User not found"
+      );
+    }
+
     const project =
       await Project.findById(projectId);
 
@@ -215,22 +221,25 @@ export const addProjectMemberService =
       );
     }
 
-    project.members.push({
-      user: payload.userId,
+    // Use atomic operation
+    const updatedProject = await Project.findByIdAndUpdate(
+      projectId,
+      {
+        $addToSet: {
+          members: {
+            user: payload.userId,
+            role: payload.role || ProjectRole.PROJECT_MEMBER,
+            joinedAt: new Date(),
+          },
+        },
+      },
+      { new: true }
+    );
 
-      role:
-        payload.role ||
-        ProjectRole.PROJECT_MEMBER,
-
-      joinedAt: new Date(),
-    });
-
-    await project.save();
-
-    return project;
+    return updatedProject;
   };
 
-  export const getProjectMembersService =
+export const getProjectMembersService =
   async (projectId: string) => {
     const project =
       await Project.findById(projectId)
@@ -252,7 +261,7 @@ export const addProjectMemberService =
     return project.members;
   };
 
-  export const updateProjectMemberRoleService =
+export const updateProjectMemberRoleService =
   async (
     projectId: string,
     memberId: string,
@@ -282,15 +291,18 @@ export const addProjectMemberService =
       );
     }
 
-    member.role = role;
+    // Use atomic operation with array filters
+    const updatedProject = await Project.findOneAndUpdate(
+      { _id: projectId, "members.user": memberId },
+      { $set: { "members.$.role": role } },
+      { new: true }
+    );
 
-    await project.save();
-
-    return project;
+    return updatedProject;
   };
 
 
-  export const removeProjectMemberService =
+export const removeProjectMemberService =
   async (
     projectId: string,
     memberId: string
@@ -316,14 +328,12 @@ export const addProjectMemberService =
       );
     }
 
-    project.members =
-      project.members.filter(
-        (member) =>
-          member.user.toString() !==
-          memberId
-      );
+    // Use atomic operation
+    const updatedProject = await Project.findByIdAndUpdate(
+      projectId,
+      { $pull: { members: { user: memberId } } },
+      { new: true }
+    );
 
-    await project.save();
-
-    return project;
+    return updatedProject;
   };

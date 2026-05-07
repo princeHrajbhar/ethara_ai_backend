@@ -3,15 +3,16 @@ import { NextFunction, Request, Response } from "express";
 import { Project } from "../models/project.model.js";
 
 import { ApiError } from "../../../utils/ApiError.js";
+import { asyncHandler } from "../../../utils/asyncHandler.js";
 
-export const verifyProjectAccess =
+export const verifyProjectAccess = asyncHandler(
   async (
     req: Request,
     _res: Response,
     next: NextFunction
   ) => {
     const projectId =
-      req.params.projectId as string;
+      (req.params.projectId || req.body.projectId) as string;
 
     const user = req.user as any;
 
@@ -45,4 +46,5 @@ export const verifyProjectAccess =
     req.project = project;
 
     next();
-  };
+  }
+);

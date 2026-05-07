@@ -32,6 +32,8 @@ import {
   updateProjectMemberRoleSchema,
 } from "../validations/project.validation.js";
 
+import { validateObjectId } from "../../../middlewares/validateObjectId.middleware.js";
+
 const router = Router();
 
 router.post(
@@ -49,6 +51,7 @@ router.get(
 
 router.get(
   "/:projectId",
+  validateObjectId("projectId"),
   protect,
   verifyProjectAccess,
   getSingleProject
@@ -56,6 +59,7 @@ router.get(
 
 router.patch(
   "/:projectId",
+  validateObjectId("projectId"),
   protect,
   verifyProjectAccess,
   verifyProjectAdmin,
@@ -65,6 +69,7 @@ router.patch(
 
 router.delete(
   "/:projectId",
+  validateObjectId("projectId"),
   protect,
   verifyProjectAccess,
   verifyProjectAdmin,
@@ -73,6 +78,7 @@ router.delete(
 
 router.post(
   "/:projectId/members",
+  validateObjectId("projectId"),
   protect,
   verifyProjectAccess,
   verifyProjectAdmin,
@@ -82,6 +88,7 @@ router.post(
 
 router.get(
   "/:projectId/members",
+  validateObjectId("projectId"),
   protect,
   verifyProjectAccess,
   getProjectMembers
@@ -89,6 +96,7 @@ router.get(
 
 router.patch(
   "/:projectId/members/:memberId/role",
+  validateObjectId("projectId", "memberId"),
   protect,
   verifyProjectAccess,
   verifyProjectAdmin,
@@ -98,6 +106,7 @@ router.patch(
 
 router.delete(
   "/:projectId/members/:memberId",
+  validateObjectId("projectId", "memberId"),
   protect,
   verifyProjectAccess,
   verifyProjectAdmin,
