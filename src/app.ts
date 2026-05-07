@@ -9,6 +9,7 @@ import { env } from "./config/env.js";
 
 import { notFoundHandler } from "./middlewares/notFound.middleware.js";
 import { globalErrorHandler } from "./middlewares/error.middleware.js";
+import projectRoutes from "./modules/project/routes/project.route.js";
 
 const app = express();
 
@@ -54,6 +55,8 @@ app.use("/api/v1/auth", authRoutes);
 
 app.use("/api/v1/users", userRoutes);
 
+app.use("/api/v1/projects", projectRoutes);
+
 /*
 |--------------------------------------------------------------------------
 | Not Found Middleware
@@ -69,5 +72,13 @@ app.use(notFoundHandler);
 */
 
 app.use(globalErrorHandler);
+
+
+
+
+
+
+
+
 
 export default app;

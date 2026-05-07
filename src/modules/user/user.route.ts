@@ -24,7 +24,7 @@ router.get(
 router.get(
   "/",
   protect,
-  authorize(UserRole.ADMIN),
+  authorize(UserRole.MEMBER),
   getAllUsers
 );
 
